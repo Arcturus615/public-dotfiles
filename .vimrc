@@ -44,9 +44,6 @@ nnoremap Q @q
 nnoremap <C-l> gt
 nnoremap <C-h> gT
 
-let $PAGER=''
-let NERDTreeMapOpenInTab='<ENTER>'
-
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
@@ -58,13 +55,10 @@ let g:UltiSnipsEditSplit="vertical"
 
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
-Plug 'scrooloose/nerdtree'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
-Plug 'Nopik/vim-nerdtree-direnter'
 Plug 'rainglow/vim'
-Plug 'chriskempson/base16-vim'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 "Plug 'KevinGoodsell/vim-csexact'
