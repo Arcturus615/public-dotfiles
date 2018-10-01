@@ -1,5 +1,5 @@
 " Color scheme settings
-colorscheme falcon
+colorscheme colorsbox-material
 set background=dark
 
 if has ('nvim')
@@ -7,7 +7,7 @@ if has ('nvim')
 endif
 
 " Custom cursor line
-hi CursorLine  cterm=NONE ctermbg=darkred ctermfg=white guibg=darkred guifg=white
+hi CursorLine  cterm=NONE ctermbg=black guibg=black
 
 " Set proper terminal
 if &term =~ "xterm"
@@ -52,7 +52,7 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-" Eighties COnfiguration
+" Eighties Configuration
 let g:eighties_enabled = 1
 let g:eighties_minimum_width = 80
 let g:eighties_extra_width = 0 " Increase this if you want some extra room
