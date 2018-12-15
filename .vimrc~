@@ -8,7 +8,6 @@ endif
 
 " Custom cursor line
 "hi CursorLine  cterm=NONE ctermbg=darkred guibg=black
-"set cursorline
 
 " Set proper terminal
 if &term =~ "xterm"
@@ -36,6 +35,7 @@ set ttimeoutlen=50
 set linespace=3
 set ignorecase
 set smartcase
+set cursorline
 
 
 nnoremap ; :
