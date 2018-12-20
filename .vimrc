@@ -6,9 +6,6 @@ if has ('nvim')
 	set termguicolors
 endif
 
-" Custom cursor line
-" hi CursorLine  cterm=NONE ctermbg=black guibg=black
-
 " Set proper terminal
 if &term =~ "xterm"
 	let &t_Co = 256
@@ -26,7 +23,6 @@ endif
 set showmatch
 set wrap!
 set number
-"set relativenumber
 set numberwidth=6
 set formatoptions+=o
 set tabstop=4
@@ -36,8 +32,6 @@ set ttimeoutlen=50
 set linespace=3
 set ignorecase
 set smartcase
-"set cursorline
-
 
 nnoremap ; :
 nnoremap Q @q
@@ -66,7 +60,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'vim-syntastic/syntastic'
-Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'justincampbell/vim-eighties'
 Plug 'tpope/vim-vinegar'
