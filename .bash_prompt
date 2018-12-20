@@ -1,0 +1,51 @@
+#! /usr/bin/env bash
+
+# Setup colors
+readonly F_BLK="\[$(tput setaf 0)\]"	# Black
+readonly F_R="\[$(tput setaf 1)\]"		# Red
+readonly F_BR="\[$(tput setaf 196)\]"	# Bright Red
+readonly F_G="\[$(tput setaf 2)\]"		# Green
+readonly F_BG="$(tput setaf 112)"		# Bright Green
+readonly F_Y="\[$(tput setaf 3)\]"		# Yellow
+readonly F_BY="\[$(tput setaf 220)\]"	# Bright Yellow
+readonly F_B="\[$(tput setaf 4)\]"		# Blue
+readonly F_M="\[$(tput setaf 5)\]"		# Magenta
+readonly F_C="\[$(tput setaf 6)\]"		# Cyan
+readonly F_W="\[$(tput setaf 7)\]"		# White
+readonly BRT="\[$(tput bold)\]"			# Bright
+readonly C_A="\[$(tput sgr0)\]"			# Clear Modifiers
+
+readonly G_PUSH='↑'
+readonly G_PULL='↓'
+readonly G_MOD='*'
+
+function _ps1 {
+	local _end _cwd _git _marks
+	local _branch _commit _message _project
+	_git='\n'
+	_end="${BRT}${F_W}>\\$ ${C_A}"
+	_cwd="${F_BG}\H ${F_BY}\w ${BRT}${F_W}\u ${C_A}"
+	if git rev-parse HEAD > /dev/null 2>&1; then
+		
+		# Shamelessly stolen from https://github.com/riobard/bash-powerline
+		while IFS= read -r line; do
+			if [[ $line =~ ^## ]]; then # header line
+				[[ $line =~ ahead\ ([0-9]+) ]] && _marks+=" $G_PUSH${BASH_REMATCH[1]}"
+				[[ $line =~ behind\ ([0-9]+) ]] && _marks+=" $G_PULL${BASH_REMATCH[1]}"
+			else # branch is modified if output contains more lines after the header line
+				_marks="$G_MOD$_marks"
+				break
+			fi
+		done < <(git status --porcelain --branch 2>/dev/null)
+	
+		_project="$(basename -s .git $(git config --get remote.origin.url))"
+		_branch="$(git symbolic-ref --short HEAD 2>/dev/null)"
+		_commit="$(git rev-parse --short=10 HEAD)"
+		_message="${F_R}$(git log -1 --pretty=%B | tr -d '\n')${C_A}"
+		_git="${F_C}\n[${_branch}${_marks}]${C_A}"
+	fi
+
+	export PS1="${_cwd}${_git}${_end}"
+}
+
+export PROMPT_COMMAND='_ps1'

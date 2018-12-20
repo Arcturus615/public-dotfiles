@@ -1,5 +1,5 @@
 " Color scheme settings
-colorscheme colorsbox-material
+colorscheme blackboard
 set background=dark
 
 if has ('nvim')
@@ -7,7 +7,7 @@ if has ('nvim')
 endif
 
 " Custom cursor line
-hi CursorLine  cterm=NONE ctermbg=black guibg=black
+" hi CursorLine  cterm=NONE ctermbg=black guibg=black
 
 " Set proper terminal
 if &term =~ "xterm"
@@ -26,7 +26,7 @@ endif
 set showmatch
 set wrap!
 set number
-set relativenumber
+"set relativenumber
 set numberwidth=6
 set formatoptions+=o
 set tabstop=4
@@ -36,7 +36,7 @@ set ttimeoutlen=50
 set linespace=3
 set ignorecase
 set smartcase
-set cursorline
+"set cursorline
 
 
 nnoremap ; :
@@ -59,6 +59,9 @@ let g:eighties_extra_width = 0 " Increase this if you want some extra room
 let g:eighties_compute = 1 " Disable this if you just want the minimum +extra
 let g:eighties_bufname_additional_patterns = ['fugitiveblame'] " Defaults to [], 'fugitiveblame' is only an example. Takes a comma delimited list of bufnames as strings.
 
+" Define Airline theme
+let g:airline_theme="monochrome"
+
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
 Plug 'tmux-plugins/vim-tmux-focus-events'
@@ -68,5 +71,7 @@ Plug 'honza/vim-snippets'
 Plug 'justincampbell/vim-eighties'
 Plug 'tpope/vim-vinegar'
 Plug 'sbdchd/vim-shebang'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 call plug#end()
 
