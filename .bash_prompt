@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # Setup colors and symbols
-F_BLK="\[$(tput setaf 0)\]"	# Black
+F_BLK="\[$(tput setaf 0)\]"		# Black
 F_R="\[$(tput setaf 1)\]"		# Red
 F_BR="\[$(tput setaf 196)\]"	# Bright Red
 F_G="\[$(tput setaf 2)\]"		# Green
@@ -22,9 +22,9 @@ _PS1_PROMPT_TYPES=''
 
 function _add_prompt {
 	# Add new prompt to the listing
+	[[ "$_PS1_PROMPT_TYPES" == *"$1"* ]] \
+		 && { printf '%s\n' "$1 already defined"; return 1; }
 	_PS1_PROMPT_TYPES="${_PS1_PROMPT_TYPES}$1:"
-	printf '%s\n' \
-		"Defined prompt display: $1"
 }
 
 function _update_prompt {
@@ -53,8 +53,8 @@ function _update_prompt {
 		_strline="$(sed -nr "s_${_del}>[^${_del}]{4,6}_&\n_gp" <<< $_str)"
 		
 		while IFS= read -r _line; do
-			[[ $_line =~ "$_d"([^"$_d"]+)"$_d"\>(.+) ]]
-			case ${BASH_REMATCH[2]} in
+			[[ $_line =~ "$_del"([^"$_del"]+)"$_del"\>(.+) ]]
+			case "${BASH_REMATCH[2]}" in
 				cur+)
 					_sep=${_sep-\\n}
 					_post_cursor="${_post_cursor}${BASH_REMATCH[1]}"
@@ -128,5 +128,6 @@ function _ps1_git_gen {
 }
 
 _add_prompt 'git'
+
 export PROMPT_COMMAND='_update_prompt'
-export _PS1_PROMPT_TYPES
+export _PS1_PROMPT_TYPES="$_PS1_PROMPT_TYPES"
