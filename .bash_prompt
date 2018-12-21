@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# Setup colors
+# Setup colors and symbols
 readonly F_BLK="\[$(tput setaf 0)\]"	# Black
 readonly F_R="\[$(tput setaf 1)\]"		# Red
 readonly F_BR="\[$(tput setaf 196)\]"	# Bright Red
@@ -14,38 +14,79 @@ readonly F_C="\[$(tput setaf 6)\]"		# Cyan
 readonly F_W="\[$(tput setaf 7)\]"		# White
 readonly BRT="\[$(tput bold)\]"			# Bright
 readonly C_A="\[$(tput sgr0)\]"			# Clear Modifiers
-
 readonly G_PUSH='↑'
 readonly G_PULL='↓'
 readonly G_MOD='*'
 
-function _ps1 {
-	local _end _cwd _git _marks
-	local _branch _commit _message _project
-	_git='\n'
-	_end="${BRT}${F_W}>\\$ ${C_A}"
-	_cwd="${F_BG}\H ${F_BY}\w ${BRT}${F_W}\u ${C_A}"
-	if git rev-parse HEAD > /dev/null 2>&1; then
-		
-		# Shamelessly stolen from https://github.com/riobard/bash-powerline
-		while IFS= read -r line; do
-			if [[ $line =~ ^## ]]; then # header line
-				[[ $line =~ ahead\ ([0-9]+) ]] && _marks+=" $G_PUSH${BASH_REMATCH[1]}"
-				[[ $line =~ behind\ ([0-9]+) ]] && _marks+=" $G_PULL${BASH_REMATCH[1]}"
-			else # branch is modified if output contains more lines after the header line
-				_marks="$G_MOD$_marks"
-				break
-			fi
-		done < <(git status --porcelain --branch 2>/dev/null)
-	
-		_project="$(basename -s .git $(git config --get remote.origin.url))"
-		_branch="$(git symbolic-ref --short HEAD 2>/dev/null)"
-		_commit="$(git rev-parse --short=10 HEAD)"
-		_message="${F_R}$(git log -1 --pretty=%B | tr -d '\n')${C_A}"
-		_git="${F_C}\n[${_branch}${_marks}]${C_A}"
-	fi
+_PS1_PROMPT_TYPES=''
 
-	export PS1="${_cwd}${_git}${_end}"
+function _add_prompt {
+	# Add new prompt to the listing
+	_PS1_PROMPT_TYPES="${_PS1_PROMPT_TYPES}$1:"
+	printf '%s\n' \
+		"Defining prompt display: $1"
 }
 
-export PROMPT_COMMAND='_ps1'
+function _update_prompt {
+	# Determine the type of working directory
+	# currently operating in and process
+	# the correct prompt based on that
+	local _end _cwd _prompt _optype _opgen _optype
+
+	_end="${BRT}${F_W}>\\$ ${C_A}"
+	_cwd="${F_BG}\H ${F_BY}\w ${BRT}${F_W}\u ${C_A}"
+
+	_prompt="${_cwd}"
+	while IFS=':' read -r _optype; do
+		_opcheck="_ps1_${_optype}_check"
+		_opgen="_ps1_${_optype}_gen"
+
+		$_opcheck \
+			|| continue
+
+		_prompt="${_prompt}$($_opgen)"
+
+	done <<< "$_PS1_PROMPT_TYPES"
+
+	_prompt="${_prompt}${_end}"
+
+	export PS1="$_prompt"
+}
+
+function _ps1_git_check {
+	# Check if the current directory is a git
+	# repository. Functions such as this should
+	# *only* return 1 or 0
+	git rev-parse HEAD > /dev/null 2>&1 \
+		|| return 1 \
+		&& return 0
+}
+
+function _ps1_git_gen {
+	# Generate prompt for git repo working directories
+	local _marks _branch _commit _message _project
+	
+	# Determine whether or not the local has been modified, as well as how far ahead
+	# or behind in commits it is	
+	# Shamelessly stolen from https://github.com/riobard/bash-powerline
+	while IFS= read -r line; do
+		if [[ $line =~ ^## ]]; then # header line
+			[[ $line =~ ahead\ ([0-9]+) ]] && _marks+=" $G_PUSH${BASH_REMATCH[1]}"
+			[[ $line =~ behind\ ([0-9]+) ]] && _marks+=" $G_PULL${BASH_REMATCH[1]}"
+		else # branch is modified if output contains more lines after the header line
+			_marks="$G_MOD$_marks"
+			break
+		fi
+	done < <(git status --porcelain --branch 2>/dev/null)
+
+	
+	#_project="$(basename -s .git $(git config --get remote.origin.url))"
+	_branch="$(git symbolic-ref --short HEAD 2>/dev/null)"
+	_commit="$(git rev-parse --short=10 HEAD)"
+	_message="${F_R}$(git log -1 --pretty=%B | tr -d '\n')${C_A}"
+	printf '%s\n' "${F_C}\n[${_branch}${_marks}]${C_A}"
+}
+
+_add_prompt 'git'
+export PROMPT_COMMAND='_update_prompt'
+export _PS1_PROMPT_TYPES
