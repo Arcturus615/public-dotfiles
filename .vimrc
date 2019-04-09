@@ -20,6 +20,10 @@ if &term =~ "xterm"
 	endif
 endif
 
+if $TERM == "screen-256color"
+  set t_Co=256
+endif
+
 set showmatch
 set wrap!
 set number
@@ -56,15 +60,70 @@ let g:eighties_bufname_additional_patterns = ['fugitiveblame'] " Defaults to [],
 " Define Airline theme
 let g:airline_theme="monochrome"
 
+let g:tagbar_autoclose=1
+let g:tagbar_autofocus=1
+
+function! WrapForTmux(s)
+  if !exists('$TMUX')
+    return a:s
+  endif
+
+  let tmux_start = "\<Esc>Ptmux;"
+  let tmux_end = "\<Esc>\\"
+
+  return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
+endfunction
+
+let &t_SI .= WrapForTmux("\<Esc>[?2004h")
+let &t_EI .= WrapForTmux("\<Esc>[?2004l")
+
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction
+
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+" Goyo Configuration
+let g:goyo_linenr = 1
+let g:goyo_height = 100
+
+function! s:goyo_enter()
+  silent !tmux set status off
+  silent !tmux list-panes -F '\#F' | grep -q Z || tmux resize-pane -Z
+  set noshowmode
+  set noshowcmd
+  set scrolloff=999
+  " ...
+endfunction
+
+function! s:goyo_leave()
+  silent !tmux set status on
+  silent !tmux list-panes -F '\#F' | grep -q Z && tmux resize-pane -Z
+  set showmode
+  set showcmd
+  set scrolloff=5
+  " ...
+endfunction
+
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User GoyoLeave nested call <SID>goyo_leave()
+
+nmap <F8> :TagbarToggle<CR>
+nmap <F7> :Goyo<CR>
+
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'vim-syntastic/syntastic'
 Plug 'honza/vim-snippets'
-Plug 'justincampbell/vim-eighties'
 Plug 'tpope/vim-vinegar'
 Plug 'sbdchd/vim-shebang'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'chr4/nginx.vim'
+Plug 'majutsushi/tagbar'
+Plug 'junegunn/goyo.vim'
 call plug#end()
 
