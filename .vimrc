@@ -1,5 +1,5 @@
 " Color scheme settings
-colorscheme blackboard
+colorscheme molokai
 set background=dark
 
 if has ('nvim')
@@ -25,7 +25,7 @@ if $TERM == "screen-256color"
 endif
 
 set showmatch
-set wrap!
+set wrap
 set number
 set numberwidth=6
 set formatoptions+=o
@@ -36,6 +36,8 @@ set ttimeoutlen=50
 set linespace=3
 set ignorecase
 set smartcase
+set breakindent
+set mouse=
 
 nnoremap ; :
 nnoremap Q @q
@@ -113,6 +115,9 @@ autocmd! User GoyoLeave nested call <SID>goyo_leave()
 nmap <F8> :TagbarToggle<CR>
 nmap <F7> :Goyo<CR>
 
+filetype plugin indent on
+syntax on
+
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
 Plug 'tmux-plugins/vim-tmux-focus-events'
@@ -125,5 +130,6 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'chr4/nginx.vim'
 Plug 'majutsushi/tagbar'
 Plug 'junegunn/goyo.vim'
+Plug 'fatih/vim-go'
 call plug#end()
 
